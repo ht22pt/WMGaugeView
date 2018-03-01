@@ -279,6 +279,7 @@
             CGContextStrokePath(context);
             
             // Draw label
+            /*
             NSString *valueString = [NSString stringWithFormat:@"%0.0f",value];
             UIFont* font = _scaleFont ? _scaleFont : [UIFont fontWithName:@"Helvetica-Bold" size:0.05];
             NSDictionary* stringAttrs = @{ NSFontAttributeName : font, NSForegroundColorAttributeName : color };
@@ -287,6 +288,7 @@
             fontWidth = [valueString sizeWithAttributes:stringAttrs];
             
             [attrStr drawAtPoint:CGPointMake(0.5 - fontWidth.width / 2.0, y3 + 0.005)];
+             */
         }
         // Subdivision
         else
