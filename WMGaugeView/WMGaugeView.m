@@ -9,6 +9,7 @@
 
 /* Scale conversion macro from [0-1] range to view  real size range */
 #define FULL_SCALE(x,y)    (x)*self.bounds.size.width, (y)*self.bounds.size.height
+#define RGB(r,g,b) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:1.0]
 
 @implementation WMGaugeView
 {
@@ -422,7 +423,10 @@
     
     UIFont* font = _rangeLabelsFont ? _rangeLabelsFont : [UIFont fontWithName:@"Helvetica" size:0.05];
     UIColor* color = _rangeLabelsFontColor ? _rangeLabelsFontColor : [UIColor whiteColor];
-    NSDictionary* stringAttrs = @{ NSFontAttributeName : font, NSForegroundColorAttributeName : color };
+    NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    // paragraphStyle.alignment = NSTextAlignmentCenter;
+    NSDictionary* stringAttrs = @{ NSFontAttributeName : font, NSForegroundColorAttributeName : color, NSParagraphStyleAttributeName: paragraphStyle};
     CGSize textSize;
     textSize = [text sizeWithAttributes:stringAttrs];
     
@@ -431,6 +435,8 @@
     float offset = ((endAngle - startAngle) - textAngle) / 2.0;
 
     float letterPosition = 0;
+    float letterHeight = 0;
+    float needHeight = 0;
     NSString *lastLetter = @"";
     
     [self rotateContext:context fromCenter:center withAngle:startAngle + offset];
@@ -438,6 +444,12 @@
     {
         NSRange range = {index, 1};
         NSString* letter = [text substringWithRange:range];
+        if ([letter  isEqual: @"\n"]) {
+            // End line
+            letterPosition = 0;
+            letterHeight += (needHeight + 0.03);
+            continue;
+        }
         NSAttributedString* attrStr = [[NSAttributedString alloc] initWithString:letter attributes:stringAttrs];
         CGSize charSize = [letter sizeWithAttributes:stringAttrs];
         float totalWidth = [[NSString stringWithFormat:@"%@%@",lastLetter, letter] sizeWithAttributes:stringAttrs].width;
@@ -446,8 +458,9 @@
         float kerning = (lastLetterWidth) ? 0.0 : ((currentLetterWidth + lastLetterWidth) - totalWidth);
         
         letterPosition += (charSize.width / 2) - kerning;
+        needHeight = charSize.height;
         float angle = (letterPosition / perimeter * 2 * M_PI) * _rangeLabelsFontKerning;
-        CGPoint letterPoint = CGPointMake((radius - charSize.height / 2.0) * cos(angle) + center_.x, (radius - charSize.height / 2.0) * sin(angle) + center_.y);
+        CGPoint letterPoint = CGPointMake((radius - (letterHeight + charSize.height) / 2.0) * cos(angle) + center_.x, (radius - (letterHeight + charSize.height) / 2.0) * sin(angle) + center_.y);
         
         CGContextSaveGState(context);
         CGContextTranslateCTM(context, letterPoint.x, letterPoint.y);
