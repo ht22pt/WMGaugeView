@@ -51,7 +51,7 @@
     
     // Screw drawing
     CAShapeLayer *screwLayer = [CAShapeLayer layer];
-    screwLayer.bounds = CGRectMake(FULLSCALE(kCenterX - kNeedleScrewRadius, kCenterY - kNeedleScrewRadius), FULLSCALE(kNeedleScrewRadius * 2.0, kNeedleScrewRadius * 2.0));
+    screwLayer.bounds = CGRectMake(FULLSCALE(kCenterX - kNeedleScrewRadius, kCenterY - kNeedleScrewRadius), FULLSCALE(kNeedleScrewRadius * 1.0, kNeedleScrewRadius * 1.0));
     screwLayer.position = CGPointMake(FULLSCALE(kCenterX, kCenterY));
     screwLayer.path = [UIBezierPath bezierPathWithOvalInRect:screwLayer.bounds].CGPath;
     screwLayer.fillColor = kNeedleScrewColor;
